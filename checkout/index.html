@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — Wolven Fiber Co.</title>
+<style>
+  :root { --ink:#1c1a17; --gold:#c9a227; --paper:#faf7f2; --card:#ffffff; --line:#e5ded2; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Georgia, 'Times New Roman', serif; background:var(--paper); color:var(--ink); }
+  header { background:#141310; color:#f3ead8; text-align:center; padding:28px 16px 20px; border-bottom:4px solid var(--gold); }
+  header .shop { font-size:28px; letter-spacing:3px; margin:0; }
+  header .tag { margin:6px 0 0; font-style:italic; color:var(--gold); font-size:15px; }
+  main { max-width:640px; margin:0 auto; padding:28px 18px 40px; text-align:center; }
+  h1 { font-size:30px; margin:6px 0 14px; }
+  p { font-size:17px; line-height:1.55; }
+  .items { margin:22px 0; text-align:left; }
+  .item { display:flex; gap:14px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:12px; }
+  .item img { width:84px; height:84px; object-fit:cover; border-radius:8px; }
+  .item .t { font-size:16px; margin:0 0 4px; }
+  .item .m { margin:0; color:#5c554a; font-size:14px; }
+  .total { font-size:18px; font-weight:bold; text-align:right; margin:4px 2px 0; }
+  .btn { display:inline-block; background:#2f5d34; color:#fff; text-decoration:none; font-size:19px; padding:14px 34px; border-radius:8px; margin:18px 0 8px; }
+  .btn:hover { background:#274d2c; }
+  .fine { font-size:13.5px; color:#6d6455; }
+  .coupon { background:#fdf6e0; border:1px dashed var(--gold); border-radius:8px; padding:10px 14px; display:none; margin:16px 0 0; }
+  .coupon code { font-size:17px; font-weight:bold; letter-spacing:1px; }
+  .links { margin-top:26px; font-size:15px; }
+  .links a { color:#2f5d34; margin:0 10px; }
+  #received { margin-top:30px; font-size:12px; color:#9a917f; word-break:break-all; }
+</style>
+</head>
+<body>
+<header>
+  <p class="shop">WOLVEN FIBER CO.</p>
+  <p class="tag">From my den to your home</p>
+</header>
+<main>
+  <h1>One More Step&hellip;</h1>
+  <p>Continue to our Etsy shop to check out securely.<br>
+  Etsy may ask you to add your item to the cart once you&rsquo;re there &mdash; it only takes a moment, and it keeps every Wolven Fiber Co. order in one safe place.</p>
+
+  <div class="items" id="items"></div>
+  <p class="total" id="total"></p>
+
+  <div class="coupon" id="couponBox">Your discount code: <code id="couponCode"></code><br>
+  <span class="fine">Enter it at Etsy checkout and it will be applied to your order.</span></div>
+
+  <a class="btn" id="continueBtn" href="https://wolvenfiberco.etsy.com">Continue to Etsy</a>
+  <p class="fine">&#128274; Secure checkout powered by Etsy</p>
+
+  <div class="links">
+    <a href="https://www.facebook.com/wolvenfiberco">Back to Facebook</a> &middot;
+    <a href="https://wolvenfiberco.etsy.com">Visit the shop</a>
+  </div>
+
+  <p id="received"></p>
+</main>
+
+<script>
+var CATALOG = {
+  "WFC-SET-CHEN-01": {
+    "title": "Hat and Scarf Set, Chunky Knit Womens Winter Set, Variegated Blue Purple Brimmed Hat",
+    "price": 49.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/21bfc5/8767133510/il_fullxfull.8767133510_608w.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4605292504"
+  },
+  "WFC-PONCHO-MAR-01": {
+    "title": "Crochet Poncho, Chunky Marled Black Gray White, Womens Winter Wrap",
+    "price": 49.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/886c87/8814918195/il_fullxfull.8814918195_pnws.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4605258501"
+  },
+  "WFC-HAT-CHAR-01": {
+    "title": "Charcoal Knit Hat, Chunky Cold Weather Beanie with Rolled Brim, Teen to Adult",
+    "price": 21.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/12ba66/8814792061/il_fullxfull.8814792061_oycs.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4605246235"
+  },
+  "WFC-HAT-CB-01": {
+    "title": "Kids Winter Hat, Color Block Double Layer Knit Hat with Pom Pom, Green Blue Brown",
+    "price": 24.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/050aa1/8766872232/il_fullxfull.8766872232_ayz1.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4605189559"
+  },
+  "WFC-SCARF-GRN-01": {
+    "title": "Knit Scarf Handmade in Flecked Green, Double-Thick Heathered Sage, 76 Inches Long",
+    "price": 29.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/232c4a/8766762050/il_fullxfull.8766762050_qprf.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4605206442"
+  },
+  "WFC-HAT-GRN-01": {
+    "title": "Kids Winter Hat, Flecked Green Double Layer Knit Hat with Charcoal Brim and Pom Pom",
+    "price": 24.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/0d56ef/8814467993/il_fullxfull.8814467993_2ecj.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4605203244"
+  },
+  "WFC-HEADBAND-TEAL-01": {
+    "title": "Twist Ear Warmer in Variegated Teal and Purple, Knit Winter Headband",
+    "price": 16.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/e2c7af/8766427480/il_fullxfull.8766427480_cs3e.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4604538837"
+  },
+  "WFC-HEADBAND-RED-01": {
+    "title": "Wool Blend Twist Ear Warmer in Red Beacon and Cream, Knit Winter Headband",
+    "price": 16.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/3bdad4/8814159549/il_fullxfull.8814159549_c898.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4604537013"
+  },
+  "WFC-HEADBAND-BLU-01": {
+    "title": "Chenille Twist Ear Warmer, Knit Winter Headband in Variegated Blue",
+    "price": 16.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/3bea95/8766178468/il_fullxfull.8766178468_oaqy.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4604461135"
+  },
+  "WFC-ORN-SANTA-01": {
+    "title": "Handmade Crochet Santa Christmas Ornament, Fluffy Beard — Cute Holiday Tree Decoration, Stocking Stuffer Gift",
+    "price": 14.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/f426db/8745949686/il_fullxfull.8745949686_ssdz.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4603607109"
+  },
+  "WFC-ORN-PENG-01": {
+    "title": "Handmade Crochet Penguin Christmas Ornament, Red Scarf — Cute Holiday Tree Decoration, Stocking Stuffer Gift",
+    "price": 14.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/1292ca/8745908992/il_fullxfull.8745908992_p98p.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4603603205"
+  },
+  "WFC-BEANIE-BLU-01": {
+    "title": "Striped Baby Beanie, Slate Blue and Green Loom Knit Newborn Hat, Winter Hat",
+    "price": 19.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/10f4c1/8766078458/il_fullxfull.8766078458_j4f5.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4602949881"
+  },
+  "WFC-BEANIE-STR-01": {
+    "title": "Mustard Baby Beanie with Pom Pom, Striped Loom Knit Baby Hat 3-6 Months, Sage Green Baby Shower Gift, Photo Prop Hat",
+    "price": 24.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/98bd4b/8811980223/il_fullxfull.8811980223_84zs.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4594013407"
+  },
+  "WFC-BEANIE-GRN-01": {
+    "title": "Pom Pom Baby Beanie, Sage Green Loom Knit Hat, Newborn Hat 0-3 Months",
+    "price": 19.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/3c073a/8765885830/il_fullxfull.8765885830_lwfl.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4594008549"
+  },
+  "WFC-BEANIE-RED-01": {
+    "title": "Handmade Red Loom Knit Baby Beanie with Pom Pom, Newborn Winter Hat",
+    "price": 19.95,
+    "image": "https://i.etsystatic.com/16801210/r/il/46c4ff/8714337267/il_fullxfull.8714337267_f5fh.jpg",
+    "link": "https://wolvenfiberco.etsy.com/listing/4593999029"
+  }
+};
+var SHOP_URL = "https://wolvenfiberco.etsy.com";
+
+function money(n) { return "$" + n.toFixed(2); }
+
+(function () {
+  var params = new URLSearchParams(window.location.search);
+  var raw = params.get("products") || params.get("product_id") || params.get("productId") || "";
+  var coupon = params.get("coupon") || params.get("coupon_code") || "";
+  var itemsEl = document.getElementById("items");
+  var totalEl = document.getElementById("total");
+  var btn = document.getElementById("continueBtn");
+  var receivedEl = document.getElementById("received");
+
+  // Meta sends products as comma-separated "PRODUCT_ID:QUANTITY" pairs.
+  var pairs = [];
+  if (raw) {
+    raw.split(",").forEach(function (part) {
+      var bits = part.split(":");
+      var id = (bits[0] || "").trim();
+      var qty = parseInt(bits[1], 10);
+      if (id) pairs.push({ id: id, qty: isNaN(qty) || qty < 1 ? 1 : qty });
+    });
+  }
+
+  var known = pairs.filter(function (p) { return CATALOG[p.id]; });
+
+  if (known.length) {
+    var total = 0;
+    known.forEach(function (p) {
+      var it = CATALOG[p.id];
+      total += it.price * p.qty;
+      var row = document.createElement("div");
+      row.className = "item";
+      var img = document.createElement("img");
+      img.src = it.image; img.alt = it.title;
+      var body = document.createElement("div");
+      var t = document.createElement("p"); t.className = "t"; t.textContent = it.title;
+      var m = document.createElement("p"); m.className = "m";
+      m.textContent = "Qty " + p.qty + " \u00B7 " + money(it.price) + " each";
+      body.appendChild(t); body.appendChild(m);
+      row.appendChild(img); row.appendChild(body);
+      itemsEl.appendChild(row);
+    });
+    totalEl.textContent = "Subtotal: " + money(total);
+    // One-of-a-kind shop: a single item goes straight to its listing;
+    // anything else goes to the shop front with the items listed above.
+    btn.href = (known.length === 1 && pairs.length === 1)
+      ? CATALOG[known[0].id].link
+      : SHOP_URL;
+  }
+
+  if (coupon) {
+    document.getElementById("couponCode").textContent = coupon;
+    document.getElementById("couponBox").style.display = "block";
+  }
+
+  if (raw) {
+    receivedEl.textContent = "Received from Facebook/Instagram: " + raw + (coupon ? " \u00B7 coupon " + coupon : "");
+  }
+})();
+</script>
+</body>
+</html>
